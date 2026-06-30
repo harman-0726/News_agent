@@ -22,7 +22,11 @@ def vector_database_result(text,url):
     if not text:
         return
     
-    text = {"Content":text[:1000],"Date":date,"Time":time,"URL":url}
+    # Store more of the article so the digest has real substance to work
+    # with. The embedding model (MiniLM) only "sees" ~256 tokens for
+    # similarity search, but the full text is still stored/returned for
+    # use in the LLM prompt context.
+    text = {"Content": text[:2000], "Date": date, "Time": time, "URL": url}
     
     texts.append(text["Content"])
     metadatas.append({"Date": str(text["Date"]) ,
@@ -33,4 +37,3 @@ def vector_database_result(text,url):
         texts=[texts[-1]],
         metadatas=[metadatas[-1]]
     )
-
