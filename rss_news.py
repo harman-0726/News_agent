@@ -4,8 +4,8 @@ import requests
 RSS_FEEDS = [
     "https://venturebeat.com/category/ai/feed/",
     "https://www.marktechpost.com/feed/",
-    "https://openai.com/news/rss.xml",
-    "https://blog.google/technology/ai/rss/"
+    "https://blog.google/technology/ai/rss/",
+    "https://syncedreview.com/feed/"
 ]
 
 HEADERS = {
