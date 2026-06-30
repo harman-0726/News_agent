@@ -22,7 +22,7 @@ def send_whatsapp_message(recipient: str, content):
 
 def scheduled_job():
     print("Running scheduled job: ingest + digest")
-    ingest_daily_news(limit_per_feed=5)
+    ingest_daily_news(limit_per_feed=10)
     digest = run_daily_digest()
     send_whatsapp_message(OWNER_PHONE, digest)
 
