@@ -20,16 +20,23 @@ DIGEST_PROMPT = PromptTemplate(
     context : {context}
 
     Task:
-    - Combine similar stories.
-    - Remove duplicate information.
-    - Keep only the most important news.
-    - Produce a WhatsApp-friendly summary for each context news.
-    - Maximum word for a single news should be under 50 words.
-    - Mention company names.
-    - End each news item with its source URL if available.
-    - Use perfect heading with a sample emoji (spark) and space 1 line after each news and shoud be clean and easy to read
-    so by reading lines i now what happend. 
-    - Example -> 1 news(60 to 80 words) , 2 news(60 to 80 words), 3..... so on 
+Task:
+- Combine similar stories.
+- Remove duplicate information.
+- Produce a WhatsApp-friendly summary.
+- Each news item should be 50–70 words.
+- For each news item explain:
+  1. What happened?
+  2. Why is it important?
+  3. Who is involved?
+- Mention the company names naturally.
+- Do NOT copy the article title only.
+- Explain the key update in simple language.
+- End each news item with the provided Source URL exactly as given.
+- Never invent or modify URLs.
+- Use a short emoji in the heading.
+- Leave one blank line between news items.
+
     """,
     input_variables=["context"],
 )
