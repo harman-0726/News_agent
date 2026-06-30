@@ -2,10 +2,9 @@ import feedparser
 import requests
 
 RSS_FEEDS = [
-    "https://venturebeat.com/category/ai/feed/",
+    "https://www.artificialintelligence-news.com/feed/",
     "https://www.marktechpost.com/feed/",
     "https://openai.com/news/rss.xml",
-    "https://blog.google/technology/ai/rss/"
 ]
 
 HEADERS = {
@@ -20,20 +19,24 @@ def get_articles(limit_per_feed=7):
     seen_urls = set()
 
     for feed_url in RSS_FEEDS:
+        feed = None
+        for attempt in range(2):
+            try:
+                resp = requests.get(feed_url, headers=HEADERS, timeout=15)
+                resp.raise_for_status()
+                feed = feedparser.parse(resp.content)
+                if feed.entries:
+                    break
+                print(f"⚠️ Attempt {attempt + 1}: no entries from {feed_url} (bozo={feed.bozo})")
+            except Exception as e:
+                print(f"⚠️ Attempt {attempt + 1} error reading {feed_url}: {e}")
+                feed = None
+
+        if not feed or not feed.entries:
+            print(f"❌ Failed to load: {feed_url}")
+            continue
+
         try:
-            # Fetch ourselves with browser-like headers; feedparser's own
-            # fetcher gets blocked by some hosts (datacenter IP / no UA).
-            resp = requests.get(feed_url, headers=HEADERS, timeout=15)
-            resp.raise_for_status()
-            feed = feedparser.parse(resp.content)
-
-            # bozo just means "not perfectly well-formed XML" — many real
-            # feeds set this even though entries parse fine. Only skip if
-            # there are genuinely no entries.
-            if not feed.entries:
-                print(f"❌ No entries parsed from: {feed_url} (bozo={feed.bozo})")
-                continue
-
             for entry in feed.entries[:limit_per_feed]:
 
                 url = entry.get("link")
