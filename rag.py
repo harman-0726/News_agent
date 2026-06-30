@@ -75,11 +75,22 @@ def run_daily_digest():
     if not results:
         return "No AI news found for today yet."
 
-    context = "\n\n".join(doc.page_content for doc in results)
+    context = ""
+
+    for doc in results:
+        context += f"""
+        Article:
+        {doc.page_content}
+        
+        Source URL:
+        {doc.metadata.get("URL", "Unavailable")}
+        
+        -------------------------
+        """
+
     chain = DIGEST_PROMPT | model
     response = chain.invoke({"context": context})
     return response.content
-
 
 def answer_query(user_question: str):
     """Used by the webhook when a user sends a message on WhatsApp."""
