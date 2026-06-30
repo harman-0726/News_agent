@@ -34,12 +34,3 @@ def vector_database_result(text,url):
         metadatas=[metadatas[-1]]
     )
 
-
-
-
-
-    
-
-
-
-    

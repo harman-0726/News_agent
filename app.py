@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
 from apscheduler.schedulers.background import BackgroundScheduler
+import pytz
 from dotenv import load_dotenv
 
 from rag import ingest_daily_news, run_daily_digest, answer_query
@@ -31,7 +32,7 @@ scheduler = BackgroundScheduler()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    scheduler.add_job(scheduled_job, "cron", hour=DIGEST_HOUR, minute=0)
+    scheduler.add_job(scheduled_job, "cron", hour=DIGEST_HOUR, minute=0, timezone=pytz.timezone("Asia/Kolkata"))
     scheduler.start()
     yield
     scheduler.shutdown()

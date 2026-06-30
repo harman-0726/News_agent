@@ -7,7 +7,7 @@ RSS_FEEDS = [
 ]
 
 
-def get_articles(limit_per_feed=5):
+def get_articles(limit_per_feed=7):
     articles = []
     seen_urls = set()
 

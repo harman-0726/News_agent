@@ -1,12 +1,19 @@
+import requests
 import trafilatura
 
-def extract_article(url):
-    downloaded = trafilatura.fetch_url(url)
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+}
 
-    if downloaded is None:
+def extract_article(url):
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"❌ Failed to fetch {url}: {e}")
         return None
 
-    text = trafilatura.extract(downloaded)
-
+    text = trafilatura.extract(resp.text)
+    if not text:
+        print(f"❌ Failed to extract content: {url}")
     return text
-
