@@ -14,7 +14,6 @@ load_dotenv()
 VERIFY_TOKEN = os.environ["VERIFY_TOKEN"]          # you choose this, set it in Meta dashboard too
 OWNER_PHONE = os.environ["OWNER_PHONE"]            # your own number, to receive the daily digest
 DIGEST_HOUR = int(os.environ.get("DIGEST_HOUR", 19))  # 24h format, server timezone
-DIGEST_MINUTE = int(os.environ.get("DIGEST_MINUTE",30))
 
 def send_whatsapp_message(recipient: str, content):
     if not isinstance(content, str):
@@ -23,7 +22,7 @@ def send_whatsapp_message(recipient: str, content):
 
 def scheduled_job():
     print("Running scheduled job: ingest + digest")
-    ingest_daily_news(limit_per_feed=10)
+    ingest_daily_news(limit_per_feed=5)
     digest = run_daily_digest()
     send_whatsapp_message(OWNER_PHONE, digest)
 
@@ -33,7 +32,7 @@ scheduler = BackgroundScheduler()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    scheduler.add_job(scheduled_job, "cron", hour=DIGEST_HOUR, minute=DIGEST_MINUTE, timezone=pytz.timezone("Asia/Kolkata"))
+    scheduler.add_job(scheduled_job, "cron", hour=DIGEST_HOUR, minute=0, timezone=pytz.timezone("Asia/Kolkata"))
     scheduler.start()
     yield
     scheduler.shutdown()
