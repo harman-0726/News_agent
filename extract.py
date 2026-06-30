@@ -16,5 +16,5 @@ def extract_article(url):
     text = trafilatura.extract(resp.text)
     if not text:
         print(f"❌ Failed to extract content: {url}")
-    return text
+    return text 
 
