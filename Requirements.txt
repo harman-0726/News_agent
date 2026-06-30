@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+apscheduler
+python-dotenv
+requests
+feedparser
+trafilatura
+langchain-core
+langchain-groq
+langchain-huggingface
+langchain-chroma
