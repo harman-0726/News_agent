@@ -23,10 +23,12 @@ DIGEST_PROMPT = PromptTemplate(
     - Combine similar stories.
     - Remove duplicate information.
     - Keep only the most important news.
-    - Produce a WhatsApp-friendly summary.
-    - Maximum 250 words.
+    - Produce a WhatsApp-friendly summary for each context news.
+    - Maximum word for a single news should be under 50 words.
     - Mention company names.
     - End each news item with its source URL if available.
+    - Use perfect heading and space 1 line after each news and shoud be very easy to read and looking beautiful
+    - Example -> 1 news(50 words) , 2 news(under 50 words>), 3..... so on 
     """,
     input_variables=["context"],
 )
@@ -65,7 +67,7 @@ def ingest_daily_news(limit_per_feed=7):
 
 
 def run_daily_digest():
-    query = f"{date.today().strftime('%d-%m-%Y')} AI news"
+    query = f"AI news {date.today().isoformat()}"
     results = vector_store.similarity_search(query=query, k=10)
     print(f"DEBUG: retrieved {len(results)} chunks from vector store")
 
@@ -80,7 +82,7 @@ def run_daily_digest():
 
 def answer_query(user_question: str):
     """Used by the webhook when a user sends a message on WhatsApp."""
-    results = vector_store.similarity_search(query=user_question, k=6)
+    results = vector_store.similarity_search(query=user_question, k=10)
 
     if not results:
         return "I couldn't find anything relevant in the news database yet."
