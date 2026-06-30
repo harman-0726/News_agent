@@ -14,7 +14,7 @@ load_dotenv()
 VERIFY_TOKEN = os.environ["VERIFY_TOKEN"]          # you choose this, set it in Meta dashboard too
 OWNER_PHONE = os.environ["OWNER_PHONE"]            # your own number, to receive the daily digest
 DIGEST_HOUR = int(os.environ.get("DIGEST_HOUR", 19))  # 24h format, server timezone
-DIGEST_MINUTE = int(os.get.environ.get("DIGEST_MINUTE",30))
+DIGEST_MINUTE = int(os.environ.get("DIGEST_MINUTE",30))
 
 def send_whatsapp_message(recipient: str, content):
     if not isinstance(content, str):
