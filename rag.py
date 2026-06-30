@@ -27,8 +27,9 @@ DIGEST_PROMPT = PromptTemplate(
     - Maximum word for a single news should be under 50 words.
     - Mention company names.
     - End each news item with its source URL if available.
-    - Use perfect heading and space 1 line after each news and shoud be very easy to read and looking beautiful
-    - Example -> 1 news(50 words) , 2 news(under 50 words>), 3..... so on 
+    - Use perfect heading with a sample emoji (spark) and space 1 line after each news and shoud be clean and easy to read
+    so by reading lines i now what happend. 
+    - Example -> 1 news(60 to 80 words) , 2 news(60 to 80 words), 3..... so on 
     """,
     input_variables=["context"],
 )
