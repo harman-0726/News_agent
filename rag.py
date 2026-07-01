@@ -7,6 +7,8 @@ from extract import extract_article
 from dotenv import load_dotenv
 from tools import agent_answer
 
+model = ChatGroq(model="llama-3.3-70b-versatile")
+
 load_dotenv()
 
 DIGEST_PROMPT = PromptTemplate(
