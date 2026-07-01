@@ -11,3 +11,6 @@ langchain-huggingface
 langchain-chroma
 sentence-transformers
 pytz
+langchain-agent
+langchain-community
+langgraph
