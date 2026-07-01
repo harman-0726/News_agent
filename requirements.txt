@@ -14,3 +14,4 @@ pytz
 langchain-agent
 langchain-community
 langgraph
+ddgs
