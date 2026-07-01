@@ -6,6 +6,7 @@ from vectorstore import vector_store, vector_database_result
 from rss_news import get_articles
 from extract import extract_article
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, BaseMessage
 
 load_dotenv()
 
