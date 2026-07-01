@@ -40,7 +40,7 @@ Task:
     input_variables=["context"],
 )
 
-def ingest_daily_news(limit_per_feed=7):
+def ingest_daily_news(limit_per_feed=10):
     """Scrape feeds, extract article text, embed + store in vector DB."""
     articles = get_articles(limit_per_feed=limit_per_feed)
     saved = 0
