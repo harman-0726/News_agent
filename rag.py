@@ -11,6 +11,8 @@ from langchain_core.messages import HumanMessage, BaseMessage
 load_dotenv()
 
 model = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
+tools = [search_news_database, get_latest_headlines]
+model_with_tools = model.bind_tools(tools)
 
 DIGEST_PROMPT = PromptTemplate(
     template="""
@@ -84,20 +86,31 @@ def run_daily_digest():
     return response.content
 
 def agentic_answer(user_question: str) -> str:
-    tools = [search_news_database, get_latest_headlines]
-    model_with_tools = model.bind_tools(tools)
     messages: list[BaseMessage] = [HumanMessage(user_question)]
-    
-    response = model_with_tools.invoke(messages)
-    messages.append(response)
-
-    if response.tool_calls:
-        for tool_call in response.tool_calls:
-            tool_fn = {t.name: t for t in tools}[tool_call["name"]]
-            tool_result = tool_fn.invoke(tool_call) 
+ 
+    ai_message = model_with_tools.invoke(messages)
+    messages.append(ai_message)
+ 
+    print(f"DEBUG: tool_calls = {ai_message.tool_calls}")
+    print(f"DEBUG: direct content = {str(ai_message.content)[:100]}")
+ 
+    # Model answered directly without calling any tool
+    if not ai_message.tool_calls:
+        return ai_message.content or "Sorry, I couldn't find an answer."
+ 
+    # Execute each tool the model decided to call
+    for tool_call in ai_message.tool_calls:
+        print(f"DEBUG: executing tool '{tool_call['name']}'")
+ 
+        if tool_call['name'] == 'search_news_database':
+            tool_result = search_news_database.invoke(tool_call)
+            tool_result.content = tool_result.content[:3000]  # truncate to avoid crash
             messages.append(tool_result)
-        
-        final = model_with_tools.invoke(messages)
-        return final.content
-
-    return response.content
+ 
+        elif tool_call['name'] == 'get_latest_headlines':
+            tool_result = get_latest_headlines.invoke(tool_call)
+            messages.append(tool_result)
+ 
+    # Final LLM call with tool results
+    final = model_with_tools.invoke(messages)
+    return final.content or "Sorry, I couldn't generate a response."
