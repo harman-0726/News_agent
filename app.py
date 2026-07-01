@@ -73,7 +73,7 @@ async def receive_message(request: Request):
         if user_text.strip().lower() in ("digest", "news", "today"):
             reply = run_daily_digest()
         else:
-            reply = answer_query(user_text)
+            reply = agentic_answer(user_text)
 
         send_whatsapp_message(sender, reply)
 
