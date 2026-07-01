@@ -19,6 +19,7 @@ DIGEST_PROMPT = PromptTemplate(
 
     Task:
 Task:
+- Start with (robot emoji) Today news
 - Combine similar stories.
 - Remove duplicate information.
 - Produce a WhatsApp-friendly summary.
@@ -32,7 +33,7 @@ Task:
 - Explain the key update in simple language.
 - End each news item with the provided Source URL exactly as given.
 - Never invent or modify URLs.
-- Use a short emoji in the heading.
+- Use a short emoji in every single news like sparkling , starts , lightning.
 - Leave one blank line between news items.
 
     """,
