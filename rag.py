@@ -84,7 +84,8 @@ def run_daily_digest():
     return response.content
 
 def agentic_answer(user_question: str) -> str:
-    model_with_tools = model.bind_tools([search_news_database, get_latest_headlines])
+    tools = [search_news_database, get_latest_headlines]
+    model_with_tools = model.bind_tools(tools)
     messages: list[BaseMessage] = [HumanMessage(user_question)]
     
     response = model_with_tools.invoke(messages)
