@@ -1,7 +1,7 @@
 from datetime import date
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
-
+from tools import search_news_database, get_latest_headlines
 from vectorstore import vector_store, vector_database_result
 from rss_news import get_articles
 from extract import extract_article
@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-model = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
+model = ChatGroq(model="llama-3.3-70b-versatile", temperature=0, max_tokens=1500)
+tools = [search_news_database, get_latest_headlines]
+model_with_tools = model.bind_tools(tools)
 
 DIGEST_PROMPT = PromptTemplate(
     template="""
@@ -40,23 +42,6 @@ Task:
     """,
     input_variables=["context"],
 )
-
-CHAT_PROMPT = PromptTemplate(
-    template="""
-    You are an AI news assistant. Answer the user's question using ONLY the
-    context below, which comes from a database of recently collected AI news
-    articles. If the context doesn't contain relevant info, say so honestly
-    instead of making things up.
-
-    context : {context}
-
-    question : {question}
-
-    Keep the answer concise and WhatsApp-friendly (max ~150 words).
-    """,
-    input_variables=["context", "question"],
-)
-
 
 def ingest_daily_news(limit_per_feed=7):
     """Scrape feeds, extract article text, embed + store in vector DB."""
@@ -99,14 +84,18 @@ def run_daily_digest():
     response = chain.invoke({"context": context})
     return response.content
 
-def answer_query(user_question: str):
-    """Used by the webhook when a user sends a message on WhatsApp."""
-    results = vector_store.similarity_search(query=user_question, k=10)
+def agentic_answer(user_question: str):
+    messages = [{"role": "user", "content": user_question}]
+    response = model_with_tools.invoke(messages)
 
-    if not results:
-        return "I couldn't find anything relevant in the news database yet."
+    # If the model decided to call a tool, execute it and feed result back
+    if response.tool_calls:
+        messages.append(response)
+        for call in response.tool_calls:
+            tool_fn = {t.name: t for t in tools}[call["name"]]
+            result = tool_fn.invoke(call["args"])
+            messages.append({"role": "tool", "content": str(result), "tool_call_id": call["id"]})
+        final = model_with_tools.invoke(messages)
+        return final.content
 
-    context = "\n\n".join(doc.page_content for doc in results)
-    chain = CHAT_PROMPT | model
-    response = chain.invoke({"context": context, "question": user_question})
     return response.content
