@@ -6,7 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import pytz
 from dotenv import load_dotenv
 
-from rag import ingest_daily_news, run_daily_digest, answer_query
+from rag import ingest_daily_news, run_daily_digest, agentic_answer
 from Whatsapp import send_whatsapp_text
 
 load_dotenv()
@@ -23,7 +23,7 @@ def send_whatsapp_message(recipient: str, content):
 
 def scheduled_job():
     print("Running scheduled job: ingest + digest")
-    ingest_daily_news(limit_per_feed=5)
+    ingest_daily_news(limit_per_feed=10)
     digest = run_daily_digest()
     send_whatsapp_message(OWNER_PHONE, digest)
 
