@@ -10,7 +10,7 @@ from langchain_core.messages import HumanMessage, BaseMessage
 
 load_dotenv()
 
-model = ChatGroq(model="llama-3.3-70b-versatile", temperature=0, max_tokens=1500)
+model = ChatGroq(model="mixtral-8x7b-32768", temperature=0, max_tokens=1500)
 tools = [search_news_database, get_latest_headlines]
 model_with_tools = model.bind_tools(tools)
 
