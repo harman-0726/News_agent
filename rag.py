@@ -10,9 +10,7 @@ from langchain_core.messages import HumanMessage, BaseMessage
 
 load_dotenv()
 
-model = ChatGroq(model="mixtral-8x7b-32768", temperature=0, max_tokens=1500)
-tools = [search_news_database, get_latest_headlines]
-model_with_tools = model.bind_tools(tools)
+model = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
 DIGEST_PROMPT = PromptTemplate(
     template="""
@@ -86,6 +84,7 @@ def run_daily_digest():
     return response.content
 
 def agentic_answer(user_question: str) -> str:
+    model_with_tools = model.bind_tools([search_news_database, get_latest_headlines])
     messages: list[BaseMessage] = [HumanMessage(user_question)]
     
     response = model_with_tools.invoke(messages)
