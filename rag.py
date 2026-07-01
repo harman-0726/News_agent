@@ -84,17 +84,18 @@ def run_daily_digest():
     response = chain.invoke({"context": context})
     return response.content
 
-def agentic_answer(user_question: str):
-    messages = [{"role": "user", "content": user_question}]
+def agentic_answer(user_question: str) -> str:
+    messages: list[BaseMessage] = [HumanMessage(user_question)]
+    
     response = model_with_tools.invoke(messages)
+    messages.append(response)
 
-    # If the model decided to call a tool, execute it and feed result back
     if response.tool_calls:
-        messages.append(response)
-        for call in response.tool_calls:
-            tool_fn = {t.name: t for t in tools}[call["name"]]
-            result = tool_fn.invoke(call["args"])
-            messages.append({"role": "tool", "content": str(result), "tool_call_id": call["id"]})
+        for tool_call in response.tool_calls:
+            tool_fn = {t.name: t for t in tools}[tool_call["name"]]
+            tool_result = tool_fn.invoke(tool_call) 
+            messages.append(tool_result)
+        
         final = model_with_tools.invoke(messages)
         return final.content
 
