@@ -4,6 +4,7 @@ from vectorstore import vector_store
 from langchain_groq import ChatGroq
 from langchain_community.tools import DuckDuckGoSearchRun
 from langgraph.checkpoint.memory import InMemorySaver
+from dotenv import load_dotenv
 
 memory = InMemorySaver()
 
