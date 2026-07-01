@@ -1,7 +1,6 @@
 from datetime import date
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
-from tools import search_news_database, get_latest_headlines
 from vectorstore import vector_store, vector_database_result
 from rss_news import get_articles
 from extract import extract_article
