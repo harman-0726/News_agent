@@ -1,6 +1,7 @@
 import os
 from contextlib import asynccontextmanager
-
+import logging
+logging.basicConfig(level=logging.INFO)
 from fastapi import FastAPI, Request, Response
 from apscheduler.schedulers.background import BackgroundScheduler
 import pytz
