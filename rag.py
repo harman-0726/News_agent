@@ -6,13 +6,9 @@ from vectorstore import vector_store, vector_database_result
 from rss_news import get_articles
 from extract import extract_article
 from dotenv import load_dotenv
-from langchain_core.messages import HumanMessage, BaseMessage
+from tools import agent_answer
 
 load_dotenv()
-
-model = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
-tools = [search_news_database, get_latest_headlines]
-model_with_tools = model.bind_tools(tools)
 
 DIGEST_PROMPT = PromptTemplate(
     template="""
@@ -86,23 +82,6 @@ def run_daily_digest():
     return response.content
 
 def agentic_answer(user_question: str) -> str:
-    messages: list[BaseMessage] = [HumanMessage(user_question)]
+    answer = agent_answer(user_question)
+    return answer
 
-    ai_message = model_with_tools.invoke(messages)
-    messages.append(ai_message)
-
-    if not ai_message.tool_calls:
-        return ai_message.content or "Sorry, I couldn't find an answer."
-
-    for tool_call in ai_message.tool_calls:
-        if tool_call['name'] == 'search_news_database':
-            tool_result = search_news_database.invoke(tool_call)
-            tool_result.content = tool_result.content[:3000]
-            messages.append(tool_result)
-        elif tool_call['name'] == 'get_latest_headlines':
-            tool_result = get_latest_headlines.invoke(tool_call)
-            messages.append(tool_result)
-
-    # Use plain model (no tools) so it MUST answer in text
-    final = model.invoke(messages)
-    return final.content or "Sorry, I couldn't generate a response."
