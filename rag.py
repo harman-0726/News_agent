@@ -87,30 +87,22 @@ def run_daily_digest():
 
 def agentic_answer(user_question: str) -> str:
     messages: list[BaseMessage] = [HumanMessage(user_question)]
- 
+
     ai_message = model_with_tools.invoke(messages)
     messages.append(ai_message)
- 
-    print(f"DEBUG: tool_calls = {ai_message.tool_calls}")
-    print(f"DEBUG: direct content = {str(ai_message.content)[:100]}")
- 
-    # Model answered directly without calling any tool
+
     if not ai_message.tool_calls:
         return ai_message.content or "Sorry, I couldn't find an answer."
- 
-    # Execute each tool the model decided to call
+
     for tool_call in ai_message.tool_calls:
-        print(f"DEBUG: executing tool '{tool_call['name']}'")
- 
         if tool_call['name'] == 'search_news_database':
             tool_result = search_news_database.invoke(tool_call)
-            tool_result.content = tool_result.content[:3000]  # truncate to avoid crash
+            tool_result.content = tool_result.content[:3000]
             messages.append(tool_result)
- 
         elif tool_call['name'] == 'get_latest_headlines':
             tool_result = get_latest_headlines.invoke(tool_call)
             messages.append(tool_result)
- 
-    # Final LLM call with tool results
-    final = model_with_tools.invoke(messages)
+
+    # Use plain model (no tools) so it MUST answer in text
+    final = model.invoke(messages)
     return final.content or "Sorry, I couldn't generate a response."
